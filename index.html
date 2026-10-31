@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anime Pulse — Popular This Month</title>
+<style>
+*{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:#0b0b12;color:#f5f5f7}
+.header{padding:28px 18px 18px;background:linear-gradient(135deg,#17132c,#0b0b12)}
+.wrap{max-width:1050px;margin:auto}.brand{font-size:14px;color:#a78bfa;font-weight:800;letter-spacing:2px}
+h1{font-size:clamp(32px,7vw,58px);margin:8px 0}.sub{color:#aaa8b8;max-width:650px;line-height:1.5}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+input,select{background:#171722;border:1px solid #302d40;color:white;border-radius:12px;padding:12px 14px;font-size:15px;outline:none}
+input{flex:1;min-width:210px}.tabs{display:flex;gap:8px;margin:22px 0 4px;overflow:auto}
+button{border:0;border-radius:10px;padding:10px 14px;background:#211d31;color:#c9c5d5;font-weight:700;cursor:pointer;white-space:nowrap}
+button.active{background:#7c3aed;color:white}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:16px;padding:22px 0 40px}
+.card{background:#15151f;border:1px solid #252431;border-radius:16px;overflow:hidden;transition:.2s}
+.card:hover{transform:translateY(-4px);border-color:#6041a8}
+.poster{height:260px;background:#242331;display:flex;align-items:center;justify-content:center;color:#777;font-weight:800;text-align:center;padding:10px}
+.poster img{width:100%;height:100%;object-fit:cover}
+.info{padding:13px}.rank{color:#a78bfa;font-size:13px;font-weight:800}.title{font-weight:800;font-size:16px;margin:5px 0 8px}.meta{font-size:13px;color:#9e9bab;display:flex;justify-content:space-between}
+.empty{text-align:center;color:#aaa;padding:50px}
+footer{text-align:center;color:#777;padding:10px 0 35px;font-size:12px}
+</style>
+</head>
+<body>
+<header class="header">
+<div class="wrap">
+<div class="brand">ANIME PULSE</div>
+<h1>Popular Anime This Month</h1>
+<p class="sub">A simple monthly anime popularity board. Search titles, filter by genre, and sort by popularity or score.</p>
+<div class="controls">
+<input id="search" placeholder="Search anime...">
+<select id="genre"><option value="all">All genres</option><option>Action</option><option>Adventure</option><option>Comedy</option><option>Fantasy</option><option>Romance</option><option>Sports</option><option>Supernatural</option></select>
+</div>
+<div class="tabs">
+<button class="active" data-sort="popular">Most Popular</button>
+<button data-sort="score">Highest Score</button>
+<button data-sort="new">Recently Added</button>
+</div>
+</div>
+</header>
+
+<main class="wrap">
+<div id="grid" class="grid"></div>
+<div id="empty" class="empty" hidden>No anime found. Try another search.</div>
+</main>
+<footer>Anime Pulse • Demo monthly chart • Popularity data is sample data</footer>
+
+<script>
+const anime=[
+{name:"One Piece",genre:"Adventure",score:9.2,pop:100,new:5,img:"https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=500&q=80"},
+{name:"Solo Leveling",genre:"Action",score:8.8,pop:98,new:1,img:"https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?auto=format&fit=crop&w=500&q=80"},
+{name:"Demon Slayer",genre:"Action",score:8.7,pop:96,new:8,img:"https://images.unsplash.com/photo-1541560052-77ec1bbc09f7?auto=format&fit=crop&w=500&q=80"},
+{name:"Jujutsu Kaisen",genre:"Supernatural",score:8.9,pop:95,new:7,img:"https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=500&q=80"},
+{name:"My Hero Academia",genre:"Action",score:8.3,pop:91,new:10,img:"https://images.unsplash.com/photo-1607988795691-3d0147b43231?auto=format&fit=crop&w=500&q=80"},
+{name:"Frieren",genre:"Fantasy",score:9.1,pop:89,new:6,img:"https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=500&q=80"},
+{name:"Haikyuu!!",genre:"Sports",score:8.9,pop:87,new:12,img:"https://images.unsplash.com/photo-1519861531473-9200262188bf?auto=format&fit=crop&w=500&q=80"},
+{name:"Spy x Family",genre:"Comedy",score:8.6,pop:84,new:4,img:"https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?auto=format&fit=crop&w=500&q=80"},
+{name:"Blue Lock",genre:"Sports",score:8.2,pop:82,new:2,img:"https://images.unsplash.com/photo-1526232761682-d26e03ac148e?auto=format&fit=crop&w=500&q=80"},
+{name:"Your Name",genre:"Romance",score:8.8,pop:78,new:15,img:"https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=500&q=80"}
+];
+
+let sort="popular";
+function render(){
+ const q=document.getElementById("search").value.toLowerCase();
+ const g=document.getElementById("genre").value;
+ let list=anime.filter(a=>(a.name.toLowerCase().includes(q))&&(g==="all"||a.genre===g));
+ list.sort((a,b)=> sort==="score"?b.score-a.score:sort==="new"?a.new-b.new:b.pop-a.pop);
+ const grid=document.getElementById("grid"); grid.innerHTML="";
+ list.forEach((a,i)=>{
+   grid.innerHTML+=`<article class="card"><div class="poster"><img src="${a.img}" alt="${a.name} poster" onerror="this.style.display='none';this.parentElement.textContent='${a.name}'"></div><div class="info"><div class="rank">#${i+1} THIS MONTH</div><div class="title">${a.name}</div><div class="meta"><span>${a.genre}</span><span>★ ${a.score}</span></div></div></article>`;
+ });
+ document.getElementById("empty").hidden=list.length!==0;
+}
+document.getElementById("search").addEventListener("input",render);
+document.getElementById("genre").addEventListener("change",render);
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("active"));b.classList.add("active");sort=b.dataset.sort;render()});
+render();
+</script>
+</body>
+</html>
